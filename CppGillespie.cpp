@@ -84,7 +84,7 @@ int main()
             t+= lifespan(weights, mt);
             //cout << "t = " << t << endl;
         }
-        cout << "The " << run_index << "th run finishes" << endl;
+        cout << "The " << run_index + 1 << "th run finishes" << endl;
     }
 
     outFile << endl << population_data << endl;

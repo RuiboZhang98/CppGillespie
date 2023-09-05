@@ -39,7 +39,7 @@ int main()
         transition_rates(i, i) = birth_rates(i);
     }
 
-    cout << "number of types = " << ntype << endl;
+    cout << "number of types = " << ntype << endl; // print some important parameters
     cout << "transition rate matrix = \n" << transition_rates << endl;
 
     // Simulation Parameters

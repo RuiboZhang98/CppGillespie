@@ -1,7 +1,9 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <vector>
 #include <random>
+#include <cstdlib>  // for exit()
 
 #include <Eigen/Dense>
 
@@ -15,11 +17,23 @@ const Eigen::Ref<const Eigen::ArrayXXd>& matrix, const int& ntype);
 double lifespan(const Eigen::Ref<const Eigen::ArrayXXd>& weights, std::mt19937_64& rng);
 int increment_type(const Eigen::Ref<const Eigen::ArrayXXd>& weights, std::mt19937_64& rng);
 
-int main()
+int main(int argc, char *argv[])
 {
     using std::cout, std::endl;
     using Eigen::Map, Eigen::RowVectorXd, Eigen::VectorXd, Eigen::seq, Eigen::last;
 
+    // process input arguments
+    if (argc == 1) // quit if no arguments
+    {
+        std::cerr << "Usage: " << argv[0] << " filename (without suffix)\n";
+        std::exit(EXIT_FAILURE);
+    }
+    else
+    {   
+        std::string data_suffix = ".txt";
+        std::cerr << argv[1] + data_suffix << endl;
+        std::exit(EXIT_FAILURE);
+    }
     // branching process parameters
     const ArrayXd initial_population { {1, 0, 0, 0 } }; 
     const int ntype = initial_population.size();

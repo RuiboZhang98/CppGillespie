@@ -79,7 +79,7 @@ int main()
                     population_data(i * ntype + data_index, run_index + 1) = population(i);
                 // cout << "record_time = " << record_time(data_index) << endl;
             }
-            weights = transition_rates.rowwise() * Map<RowVectorXd>(population.data(), population.size()).array();
+            weights = transition_rates.colwise() * Map<RowVectorXd>(population.data(), population.size()).array().transpose();
             population(increment_type(weights, mt)) += 1;
             t+= lifespan(weights, mt);
             //cout << "t = " << t << endl;

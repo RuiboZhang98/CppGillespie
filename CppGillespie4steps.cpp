@@ -21,7 +21,7 @@ int main()
     using Eigen::Map, Eigen::RowVectorXd, Eigen::VectorXd, Eigen::seq; //, Eigen::last;
 
     // branching process parameters
-    const ArrayXd initial_population { {1000, 0, 0, 0 } }; 
+    const ArrayXd initial_population { {10000, 0, 0, 0 } }; 
     const int ntype = initial_population.size();
     const ArrayXd birth_rates { {0, 0, 1, 1.5 } };
     // ArrayXd death_rates { {0, 0, 0, 0 } }; We don't consider death now.
@@ -43,10 +43,10 @@ int main()
     cout << "transition rate matrix = \n" << transition_rates << endl;
 
     // Simulation Parameters
-    const double tmax = 15;          // ending time of simulations
+    const double tmax = 20;          // ending time of simulations
     // have to add a little bit time to actually reach tmax
     const int runs = 1;        // number of realizations
-    const double tgrid =  1;    // time grid length. On grid points populations are recorded
+    const double tgrid =  0.1;    // time grid length. On grid points populations are recorded
     const int datalen = (int)(tmax / tgrid);  // length of recorded data
     int flag;
 
@@ -61,10 +61,10 @@ int main()
     ArrayXXd weights(ntype, ntype);
     // In the following population data array, each colume stores a single realization.
     // The first column is used to store the time grid;
-    ArrayXXd population_data = ArrayXXd::Constant(datalen * ntype, runs + 1,-1.0); 
-    for (int i = 0; i < ntype; ++i){
-        population_data.block(i * datalen, 0, datalen, 1) = record_time;
-    }
+    ArrayXXd population_data = ArrayXXd::Constant(datalen * runs, ntype + 1,-1.0); 
+    
+    population_data.block(0, 0, datalen, 1) = record_time; // write times in the first column
+
     int data_index, run_index, change_index;
     double t;
     // save to a file
@@ -78,8 +78,7 @@ int main()
         data_index = 0;     // reset the index of data
         while (t < tmax){
             for ( ; record_time(data_index) <= t ; ++data_index){
-                for (int i = 0; i < ntype; ++i)
-                    population_data(i * ntype + data_index, run_index + 1) = population(i);
+                population_data.block(run_index * datalen + data_index, 1, 1, 4) = population.transpose();
                 cout << "record_time = " << record_time(data_index)
                 << " Population = " << population.transpose() << endl;
             }
@@ -94,8 +93,7 @@ int main()
         // for the end time
         cout << "record_time = " << record_time(data_index)
             << " Population = " << population.transpose() << endl;
-        for (int i = 0; i < ntype; ++i)
-            population_data(i * ntype + data_index, run_index + 1) = population(i);
+        population_data.block(run_index * datalen + data_index, 1, 1, 4) = population.transpose();
         cout << "The " << run_index + 1 << "th run finishes" << endl;
     }
 

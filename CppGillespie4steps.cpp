@@ -45,7 +45,7 @@ int main()
     // Simulation Parameters
     const double tmax = 20;          // ending time of simulations
     // have to add a little bit time to actually reach tmax
-    const int runs = 1;        // number of realizations
+    const int runs = 10000;        // number of realizations
     const double tgrid =  0.1;    // time grid length. On grid points populations are recorded
     const int datalen = (int)(tmax / tgrid);  // length of recorded data
     int flag;
@@ -61,15 +61,14 @@ int main()
     ArrayXXd weights(ntype, ntype);
     // In the following population data array, each colume stores a single realization.
     // The first column is used to store the time grid;
-    ArrayXXd population_data = ArrayXXd::Constant(datalen * runs, ntype + 1,-1.0); 
+    ArrayXXd population_data = ArrayXXd::Constant(datalen * runs, ntype + 1,-1.0);
+    ArrayXXd waitingtime_data = ArrayXXd::Constant(datalen, ntype + 1, 0.0);  
     
     population_data.block(0, 0, datalen, 1) = record_time; // write times in the first column
+    waitingtime_data.block(0, 0, datalen, 1) = record_time; 
 
     int data_index, run_index, change_index;
     double t;
-    // save to a file
-    std::ofstream outFile;
-    outFile.open("data.txt");
 
     // The main body of the Gillespie Simulation
     for (run_index = 0; run_index < runs; ++run_index){
@@ -79,8 +78,9 @@ int main()
         while (t < tmax){
             for ( ; record_time(data_index) <= t ; ++data_index){
                 population_data.block(run_index * datalen + data_index, 1, 1, 4) = population.transpose();
-                cout << "record_time = " << record_time(data_index)
-                << " Population = " << population.transpose() << endl;
+                waitingtime_data.block(data_index, 1, 1, 4) += (population.transpose() > 0).cast<double>();
+                // cout << "record_time = " << record_time(data_index)
+                // << " Population = " << population.transpose() << endl;
             }
             weights = transition_rates.colwise() * Map<RowVectorXd>(population.data(), population.size()).array().transpose();
             change_index = increment_type(weights, mt, flag);
@@ -91,17 +91,25 @@ int main()
             // cout << "t = " << t << endl;
         }
         // for the end time
-        cout << "record_time = " << record_time(data_index)
-            << " Population = " << population.transpose() << endl;
+        //cout << "record_time = " << record_time(data_index)
+        //    << " Population = " << population.transpose() << endl;
         population_data.block(run_index * datalen + data_index, 1, 1, 4) = population.transpose();
+        waitingtime_data.block(data_index, 1, 1, 4) += (population.transpose() > 0).cast<double>();
         cout << "The " << run_index + 1 << "th run finishes" << endl;
     }
 
-    outFile << endl << population_data << endl;
-    outFile.close();
+    // save to a file
+    std::ofstream outFile_population, outFile_waitingtimes;
+    outFile_population.open("population_data.txt");
+    outFile_population << endl << population_data << endl;
+    outFile_population.close();
 
-    cout << "Finished. Press any key to exit.";
-    getchar();
+    outFile_population.open("waitingtime_data.txt");
+    outFile_population << endl << waitingtime_data << endl;
+    outFile_population.close();
+
+    // cout << "Finished. Press any key to exit.";
+    // getchar();
 
     return 0;
 }

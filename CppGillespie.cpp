@@ -84,14 +84,14 @@ int main(int argc, char** argv)
     // branching process parameters
     const ArrayXd initial_population { {10000, 0, 0, 0, 0} }; 
     const int ntype = initial_population.size();
-    const ArrayXd birth_rates { {0, 0, 0.8, 1.2, 1.2} };
+    const ArrayXd birth_rates { {0, 0, 0.7, 1.0, 1.0} };
     // ArrayXd death_rates { {0, 0, 0, 0 } }; We don't consider death now.
     const double u = 1e-3;          // The scale of mutation rates
     ArrayXXd transition_rates {      // This gives the ratio of  
         {0, 0.2, 0, 0, 0},             // the mutation rates (from type i to type j).
-        {0, 0, 10, 0, 0},               // We need more computations to reach the actual mutation rates
+        {0, 0, 8, 0, 0},               // We need more computations to reach the actual mutation rates
         {0, 0, 0, 5, 0},
-        {0, 0, 0, 0, 5},
+        {0, 0, 0, 0, 6},
         {0, 0, 0, 0, 0}
     };
 
@@ -193,15 +193,17 @@ int main(int argc, char** argv)
             }
         }
         // for the end time
-        population_data.block(run_index * datalen + data_index, 1, 1, ntype) = old_population.transpose();
-        waitingtime_data.block(data_index, 1, 1, ntype) += (old_population.transpose() > 0).cast<double>();
-        population_data(run_index * datalen + data_index, 0) = record_time(data_index);
-        waitingtime_data(data_index, 0) = record_time(data_index);
+        for ( ; record_time(data_index) < t ; ++data_index){
+            population_data.block(run_index * datalen + data_index, 1, 1, ntype) = old_population.transpose();
+            waitingtime_data.block(data_index, 1, 1, ntype) += (old_population.transpose() > 0).cast<double>();
+            population_data(run_index * datalen + data_index, 0) = record_time(data_index);
+            waitingtime_data(data_index, 0) = record_time(data_index);
 
-        if (debug_mode){
-            cout << "End Time: t = " << t
-            << " record_time = " << record_time(data_index)
-            << " Population = " << population.transpose() << endl;
+            if (debug_mode){
+                cout << "End Time: t = " << t
+                << " record_time = " << record_time(data_index)
+                << " Population = " << population.transpose() << endl;
+            }
         }
 
         cout << "The " << run_index + 1 << "th run finishes" << endl;

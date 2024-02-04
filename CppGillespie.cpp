@@ -203,7 +203,14 @@ int main(int argc, char** argv)
                 cout << "End Time: t = " << t
                 << " record_time = " << record_time(data_index)
                 << " Population = " << population.transpose() << endl;
+
+                cout << "data_index = " << data_index << 
+                "record size = " << record_time.size() << "datalen = " 
+                << datalen << endl;
             }
+            
+            if (data_index + 1 == record_time.size())
+                break;
         }
 
         cout << "The " << run_index + 1 << "th run finishes" << endl;

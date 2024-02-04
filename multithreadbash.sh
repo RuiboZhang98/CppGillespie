@@ -2,7 +2,7 @@
 
 for sd in {21..40}
 do
-	./Gillespie812 -o model812 --seed $sd --runs 50 &
+	./model5type -o toymodel5type --seed $sd --runs 100 &
 done
 
 wait

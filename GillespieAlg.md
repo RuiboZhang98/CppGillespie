@@ -18,6 +18,4 @@ $$
 
 In the above expression, we have set the mutation to be *mutation at division*. This is different from *migration* or *pure mutation* where 
 
-$$
-    \mathbb{P}(\bm{\xi}_{i} = \mathbf{e}_j) = \frac{u_{ij}}{a_i} \quad (j \neq i).
-$$
+$$\mathbb{P}(\mathbf{\xi}_{i} = \mathbf{e}_j) = \frac{u_{ij}}{a_i} \quad (j \neq i).$$

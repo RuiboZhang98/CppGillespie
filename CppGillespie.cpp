@@ -11,7 +11,7 @@ using Eigen::Ref, Eigen::ArrayXXd, Eigen::ArrayXd, Eigen::ArrayXi;
 
 // function prototypes
 int find_positive_indices(vector<int>* r, vector<int>* c, 
-const Eigen::Ref<const Eigen::ArrayXXd>& matrix, const int& ntype);
+    const Eigen::Ref<const Eigen::ArrayXXd>& matrix, const int& ntype);
 double lifespan(const Eigen::Ref<const Eigen::ArrayXXd>& weights, std::mt19937_64& rng);
 int increment_type(const Eigen::Ref<const Eigen::ArrayXXd>& weights, std::mt19937_64& rng, int &flag);
 
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
                 cout << "Error: please enter the number of runs" << endl;
                 return 1;
             } else {
-                // set number of threads
+                // set number of runs
                 runs = atoi(argv[i+1]);
             }
         }
@@ -71,6 +71,7 @@ int main(int argc, char** argv)
         }
 
         if ((string)argv[i] == "-debug") {
+            // if I want to print the log
             debug_mode = true;
         }
 
@@ -108,7 +109,7 @@ int main(int argc, char** argv)
     const int datalen = (int)(tmax / tgrid) + 1;  // length of recorded data
     int flag;
 
-    // output file name
+    // output file names
     string outputfile_population_filename = outputfile + "_population_seed" 
     + std::to_string((int)seed) + "runs" + std::to_string(runs) + "tmax" + 
     std::to_string((int)tmax) + ".txt";
@@ -142,7 +143,6 @@ int main(int argc, char** argv)
     ArrayXXd tau_data = ArrayXXd::Constant(runs, ntype - 1, -1.0);    
 
     population_data.block(0, 0, datalen, 1) = record_time; // write times in the first column
-    waitingtime_data.block(0, 0, datalen, 1) = record_time;
 
     int data_index, run_index, change_index;
     double t;
@@ -216,6 +216,7 @@ int main(int argc, char** argv)
     }
     // normalize waiting time data
     waitingtime_data /= runs;
+    waitingtime_data.block(0, 0, datalen, 1) = record_time;
 
     // save to files
     std::ofstream outFile;

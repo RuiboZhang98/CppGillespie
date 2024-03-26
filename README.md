@@ -1,7 +1,7 @@
 # CppGillespie
 The goal of this project is to build up a Gillespie simulation from the beginning using C plus plus. Along the way, all the issues are good practise of dealing with Cpp, Github, Git Bash, department server...
 
-The main goal of this project is to simulate a multitype branching process.
+The main goal of this project is to simulate a multitype branching process. For more information about the mathematical task, please refer to [Sampling a multi-type branching process](GillespieAlg.md).
 
 # Compile
 To compile the cpp file, one first installs the [Eigen library](https://eigen.tuxfamily.org/index.php?title=Main_Page). After having the Eigen library, one can compile the code by the following command line:

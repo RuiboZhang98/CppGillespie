@@ -6,7 +6,7 @@ $$\mathbf{N}(t) = (N_0(t), N_1(t),\cdots,N_{q-1}(t)).$$
 
 The type-$i$ individuals have birth rate $r_i \geq 0$, death rate $d_i \geq 0$, and $u_{ij}, j\neq i$ which is the transition rate to type-$j$. We define the net growth rate as $\lambda_i = r_i - d_i$.
 
-On the level of each individual, we can tell that a type-$i$ individual has an exponentially distributed lifespan with parameter $a_i := r_i + d_i + \sum_{j \neq i}u_{ij}$. When a type-$i$ dies, it splits into several new individuals, not necessarily of its own type. We refer to the distribution of newly born individuals as the \textit{offspring distribution} $\mathbf{\xi}_i= (\xi_{i1},\xi_{i2},\cdots,\xi_{iq})$. The probability mass function of $\xi_i$ is
+On the level of each individual, we can tell that a type-$i$ individual has an exponentially distributed lifespan with parameter $a_i := r_i + d_i + \sum_{j \neq i}u_{ij}$. When a type-$i$ dies, it splits into several new individuals, not necessarily of its own type. We refer to the distribution of newly born individuals as the *offspring distribution* $\mathbf{\xi}_i= (\xi_{i1},\xi_{i2},\cdots,\xi_{iq})$. The probability mass function of $\xi_i$ is
 
 $$
 \begin{aligned}

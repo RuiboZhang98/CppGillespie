@@ -10,9 +10,8 @@ using std::vector, std::string;
 using Eigen::Ref, Eigen::ArrayXXd, Eigen::ArrayXd, Eigen::ArrayXi;
 
 // function prototypes
-int find_positive_indices(vector<int> * r, vector<int> * c, 
+int find_positive_indices(vector<int>* r, vector<int>* c, 
 const Eigen::Ref<const Eigen::ArrayXXd>& matrix, const int& ntype);
-
 double lifespan(const Eigen::Ref<const Eigen::ArrayXXd>& weights, std::mt19937_64& rng);
 int increment_type(const Eigen::Ref<const Eigen::ArrayXXd>& weights, std::mt19937_64& rng, int &flag);
 
@@ -237,7 +236,7 @@ int main(int argc, char** argv)
 
 // function definitions
 
-int find_positive_indices(vector<int> * r, vector<int> * c, const Eigen::Ref<const Eigen::ArrayXXd>& matrix, const int& ntype)
+int find_positive_indices(vector<int>* r, vector<int>* c, const Eigen::Ref<const Eigen::ArrayXXd>& matrix, const int& ntype)
 {
     // This function finds the positive indices of a given 2-d Eigen Array.
     // The row indices and column indicies are recorded in vectors r and c, respectively.

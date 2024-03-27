@@ -14,7 +14,7 @@ One needs to replace "/path/to/eigen/" by the directory of Eigen.
 
 Use the following command to run the executable file:
 
-    ./CppGilespie -o CppGilespie --seed 1 --runs 1 --tmax 5
+    ./CppGilespie -o CppGilespie --seed 1 --runs 5 --tmax 10
 
 ## Arguments
 
@@ -23,15 +23,47 @@ Use the following command to run the executable file:
 --runs 1 (positive int): This argument provides the number of independent samples. (Optional with default value 1)
 --tmax 5 (positive double): This argument provides the maximum time in each realization. (Optional with default value 20.0)
 
-## Special Option
+## Options
 
-Use `-debug` to print log file. To save the log in to a txt file, use
+1. Use `-debug` to print log file. To save the log in to a txt file, use
 
-    ./CppGilespie -o CppGilespie --seed 1 --runs 1 --tmax 5 -debug >> log.txt
+    ./CppGilespie -o CppGilespie --seed 1 --runs 5 --tmax 10 -debug >> log.txt
 
-Note one needs to ==hit enter== after run the above line to write the log.
+Note that one needs to **hit enter** after run the above line to write the log.
 
-## Multithread Computaiton via bash script
+2. Use `-printpop` to print cell populations for all realizations. For example,
+
+    ./CppGilespie -o CppGilespie --seed 1 --runs 5 --tmax 10 -printpop
+
+is going to output an extra .txt file. Please refer to the description in the section below titled 'Output files'.
+
+# Output files
+
+i. (Optional) CppGilespie_population_seed1runs5tmax10.txt
+
+This file collects the cellular population in the entire simulation time interval with a resolution $ \Delta t = 0.1$. It contains a 
+
+$$\left(\frac{\text{runs} \times \text{tmax + 1}}{\Delta t}\right) \text{ by } \text{ number of types } + 1$$
+
+matrix. The first column records times.
+
+ii. CppGilespie_tau_seed1runs5.txt
+
+This files collects the first arrival time of each type except the intial type in all the realizations. It contains a 
+
+$$\text{runs} \text{ by } \text{ number of types } - 1$$
+
+matrix.
+
+iii. CppGilespie_waitingtime_seed1runs5.txt
+
+This files presents the waiting time distribution of all the types include the first type. The first column records times. It contains a
+
+$$\text{runs} \text{ by } \text{ number of types } + 1$$
+
+matrix.
+
+# Multithread computaiton via bash script
 
 Multithreadbash.sh is a simple bash script that allows the executable file to run parallelly on a multicore machine. 
 

@@ -43,7 +43,7 @@ i. (Optional) CppGilespie_population_seed1runs5tmax10.txt
 
 This file collects the cellular population in the entire simulation time interval with a resolution $ \Delta t = 0.1$. It contains a 
 
-$$\left(\frac{\text{runs} \times \text{tmax + 1}}{\Delta t}\right) \text{ by } \text{ number of types } + 1$$
+$$\left(\text{runs} \times \left(\frac{\text{tmax}}{\Delta t} + 1\right)\right) \text{ by } \text{ number of types } + 1$$
 
 matrix. The first column records times.
 
@@ -51,7 +51,7 @@ ii. CppGilespie_tau_seed1runs5.txt
 
 This files collects the first arrival time of each type except the intial type in all the realizations. It contains a 
 
-$$\text{runs} \text{ by } \text{ number of types } - 1$$
+$$\text{runs} \text{ by } (\text{number of types } - 1)$$
 
 matrix.
 
@@ -59,7 +59,7 @@ iii. CppGilespie_waitingtime_seed1runs5.txt
 
 This files presents the waiting time distribution of all the types include the first type. The first column records times. It contains a
 
-$$\text{runs} \text{ by } \text{ number of types } + 1$$
+$$\text{runs} \text{ by } (\text{number of types } + 1)$$
 
 matrix.
 

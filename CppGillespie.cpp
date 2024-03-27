@@ -26,6 +26,7 @@ int main(int argc, char** argv)
     int runs = 1;                       // number of realizations
     double tmax = 20;                   // end time of simulations
     bool debug_mode = false;            // debug mode prints traj
+    bool printpop = false;
 
     // read parameters
     for (int i = 1; i < argc; ++i) {
@@ -75,6 +76,10 @@ int main(int argc, char** argv)
             debug_mode = true;
         }
 
+        if ((string)argv[i] == "-printpop") {
+            printpop = true;
+        }
+
         if (outputfile == "") {
             cout << "Error: no output file" << endl;
             return 1;
@@ -82,17 +87,15 @@ int main(int argc, char** argv)
     }
 
     // branching process parameters
-    const ArrayXd initial_population { {10000, 0, 0, 0, 0} }; 
+    const ArrayXd initial_population { {4000, 0, 0} }; 
     const int ntype = initial_population.size();
-    const ArrayXd birth_rates { {0, 0, 0.7, 1.0, 1.0} };
+    const ArrayXd birth_rates { {0, 0.05, 0} };
     // ArrayXd death_rates { {0, 0, 0, 0 } }; We don't consider death now.
-    const double u = 1e-3;          // The scale of mutation rates
+    const double u = 1e-6;          // The scale of mutation rates
     ArrayXXd transition_rates {      // This gives the ratio of  
-        {0, 0.2, 0, 0, 0},             // the mutation rates (from type i to type j).
-        {0, 0, 8, 0, 0},               // We need more computations to reach the actual mutation rates
-        {0, 0, 0, 5, 0},
-        {0, 0, 0, 0, 6},
-        {0, 0, 0, 0, 0}
+        {0, 1, 0},             // the mutation rates (from type i to type j).
+        {0, 0, 20},               // We need more computations to reach the actual mutation rates
+        {0, 0, 0}
     };
 
     transition_rates = transition_rates * u;
@@ -113,7 +116,7 @@ int main(int argc, char** argv)
     string outputfile_population_filename = outputfile + "_population_seed" 
     + std::to_string((int)seed) + "runs" + std::to_string(runs) + "tmax" + 
     std::to_string((int)tmax) + ".txt";
-
+    
     string outputfile_waitingtime_filename = outputfile + "_waitingtime_seed" 
     + std::to_string((int)seed) + "runs" + std::to_string(runs) + ".txt";
 
@@ -124,6 +127,7 @@ int main(int argc, char** argv)
     cout << "number of runs = " << runs << endl; // print some important parameters
     cout << "tmax = " << tmax << endl;
     cout << "tgrid = " << tgrid << endl;
+    cout << "printpop = " << printpop << endl;
 
     std::mt19937_64 mt { seed };        // random number generator. When having concurrency, the seed for each thread should be different 
     
@@ -137,12 +141,15 @@ int main(int argc, char** argv)
     ArrayXXd population_data = ArrayXXd::Constant(datalen * runs, ntype + 1,-1.0);
     
     // The following matrix is used to count if type i exists at record_time points
-    ArrayXXd waitingtime_data = ArrayXXd::Constant(datalen, ntype + 1, -1.0);
+    ArrayXXd waitingtime_data = ArrayXXd::Constant(datalen, ntype + 1, 0.0);
 
     // The following matrix is used to collect the actual arrival time
     ArrayXXd tau_data = ArrayXXd::Constant(runs, ntype - 1, -1.0);    
 
-    population_data.block(0, 0, datalen, 1) = record_time; // write times in the first column
+    if(printpop)
+        population_data.block(0, 0, datalen, 1) = record_time; // write times in the first column
+    
+    waitingtime_data.block(0, 0, datalen, 1) = record_time;
 
     int data_index, run_index, change_index;
     double t;
@@ -162,10 +169,12 @@ int main(int argc, char** argv)
 
         while (t < tmax){
             for ( ; record_time(data_index) < t ; ++data_index){
-                population_data.block(run_index * datalen + data_index, 1, 1, ntype) = old_population.transpose();
+                if(printpop){
+                    population_data.block(run_index * datalen + data_index, 1, 1, ntype) = old_population.transpose();
+                    population_data(run_index * datalen + data_index, 0) = record_time(data_index);
+                }
+                    
                 waitingtime_data.block(data_index, 1, 1, ntype) += (old_population.transpose() > 0).cast<double>();
-
-                population_data(run_index * datalen + data_index, 0) = record_time(data_index);
                 waitingtime_data(data_index, 0) = record_time(data_index);
 
                 if (debug_mode){
@@ -193,9 +202,12 @@ int main(int argc, char** argv)
         }
         // for the end time
         for ( ; record_time(data_index) < t ; ++data_index){
-            population_data.block(run_index * datalen + data_index, 1, 1, ntype) = old_population.transpose();
+            if(printpop){
+                population_data.block(run_index * datalen + data_index, 1, 1, ntype) = old_population.transpose();
+                population_data(run_index * datalen + data_index, 0) = record_time(data_index);
+            }
+            
             waitingtime_data.block(data_index, 1, 1, ntype) += (old_population.transpose() > 0).cast<double>();
-            population_data(run_index * datalen + data_index, 0) = record_time(data_index);
             waitingtime_data(data_index, 0) = record_time(data_index);
 
             if (debug_mode){
@@ -215,14 +227,17 @@ int main(int argc, char** argv)
         cout << "The " << run_index + 1 << "th run finishes" << endl;
     }
     // normalize waiting time data
-    waitingtime_data /= runs;
-    waitingtime_data.block(0, 0, datalen, 1) = record_time;
+
+    waitingtime_data.block(0, 1, datalen, ntype) /= runs;
 
     // save to files
     std::ofstream outFile;
-    outFile.open(outputfile_population_filename);
-    outFile << endl << population_data << endl;
-    outFile.close();
+
+    if(printpop){
+        outFile.open(outputfile_population_filename);
+        outFile << endl << population_data << endl;
+        outFile.close();
+    }
 
     outFile.open(outputfile_waitingtime_filename);
     outFile << endl << waitingtime_data << endl;

@@ -1,3 +1,7 @@
+# Sequential mutation of cancer cells
+
+
+
 # Multi-type branching process
 
 We consider $q$ types of individuals. The population of individuals is denoted by 

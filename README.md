@@ -74,5 +74,10 @@ Multithreadbash.sh is a simple bash script that allows the executable file to ru
 
 In the above script, `for sd in {21..40}` is a for loop that assign different random seeds to different threads.
 
+# Some futurn plans
 
+1. Add Oop stuff
+2. Read file for input model parameters
+3. Figure out the correct way to do the parallel computing inside c++ (instead of a bash script)
+   
 

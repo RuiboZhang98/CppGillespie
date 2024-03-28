@@ -19,8 +19,11 @@ Use the following command to run the executable file:
 ## Arguments
 
 -o CppGilespie (string): This argument names output file names (Required)
+
 --seed 1 (int): This argument provides the random seed in the random number generator (Required)
+
 --runs 1 (positive int): This argument provides the number of independent samples. (Optional with default value 1)
+
 --tmax 5 (positive double): This argument provides the maximum time in each realization. (Optional with default value 20.0)
 
 ## Options

@@ -1,10 +1,10 @@
 # Sequential mutation of cancer cells
 
-
+Cancer is a genetic disease that results from accumulation of driver mutations which confer a selective growth advantage to tumor cells. To facilitate mathematical quantification of the carcinogenic process, stochastic models can be used to model the accumulation of driver mutations, in particular population sizes and arrival time distributions for premalignant and malignant subpopulations.
 
 # Multi-type branching process
 
-We consider $q$ types of individuals. The population of individuals is denoted by 
+We consider $q$ types of cancer cells. The population vector at given time $t$ is denoted by 
 
 $$\mathbf{N}(t) = (N_0(t), N_1(t),\cdots,N_{q-1}(t)).$$
 
@@ -26,3 +26,16 @@ $$
 In the above expression, we have set the mutation to be *mutation at division*. This is different from *migration* or *pure mutation* where 
 
 $$\mathbb{P}(\mathbf{\xi_i} = \mathbf{e_j}) = \frac{u_{ij}}{a_i} \quad (j \neq i).$$
+
+# Gillepie Algorithm for Monte Carlo Simulation of multi-type branching processes
+
+Roughly speaking, the algorithm for simulating a single realization of the stochastic process reads:
+
+0. Specify the intial population vector *v0 <- N0*, and the intial time *t <- 0*
+1. Multiple each entry of the *v0* by the life span parameter vector $a_i$. Let *a* be the vector of $a_i$.
+   *weight <- v0 elementsie product a* 
+2. Sample an exponential distribution *Exp* with paramter *weight*. The time for next population change event is
+   *t <- t + Exp*
+3. Sample an uniform distribution *U*. Use a for loop to figure out the event type *event*. Then update the population vector
+   *v0 <- v0 + event*
+4. Go back to 1 unless *t > tmax*. 

@@ -6,9 +6,9 @@
 
 #include "GeneClass.h"
 
-class MutationPathway { // a linear mutational pathway
+class MutationNetwork { // a mutational network
     public:
-    MutationPathway(const std::vector<Gene>& genes, int initial_population);
+    MutationNetwork(const std::vector<Gene>& genes, int initial_population);
     void print_mutation_path_info();
 
     protected: 
@@ -18,7 +18,7 @@ class MutationPathway { // a linear mutational pathway
     Eigen::ArrayXXd transition_rates;
 };
 
-class Simulator: public MutationPathway { // Gillespie Simulation
+class Simulator: public MutationNetwork { // Gillespie Simulation
     public:
     Simulator(int runs, int seed, float tmax, float tgrid);
     void print_simulator_info();
@@ -43,6 +43,7 @@ int main(){
     using std::vector;
     using Eigen::Ref, Eigen::ArrayXXd, Eigen::ArrayXd, Eigen::RowVectorXd;
 
+    //TO DO: Read all files in a folder 
     TumorSuppressor APC("genes/G1TSGApc.txt"), TP53("genes/G3TSGTp53.txt");
     Ocogene Kras("genes/G2OcogeneKras.txt");
     

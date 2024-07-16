@@ -5,7 +5,7 @@
 #include <string>
 
 #include <Eigen/Dense> // path: G:\\code\\cfiles\\eigen-3.4.0
-#include <Eigen/Core>
+#include <Eigen/Core>  // C:\\Users\\rzhang98\\source\\library\\eigen-3.4.0
 
 using std::vector, std::string;
 using Eigen::Ref, Eigen::ArrayXXd, Eigen::ArrayXd, Eigen::ArrayXi;

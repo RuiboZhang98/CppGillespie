@@ -3,6 +3,8 @@
 #include <random>
 #include <Eigen/Dense>
 #include <Eigen/Core>
+#include <tuple>
+#include <iterator> //for std::back_inserter
 
 #include <future>
 #include <vector>
@@ -32,11 +34,11 @@ class TumorGenerator { // a mutational network
     void evolve_step(); //One step forward
     double lifespan(const Eigen::Ref<const Eigen::ArrayXXd>& weights);
     template <typename Derived>
-    int increment_type(const Eigen::ArrayBase<Derived> &weights, int &decrement);
+    std::tuple<int,int> increment_type(const Eigen::ArrayBase<Derived> &weights);
 
     // collect the data of a single realization
     // return a table of data points (a Eigen array)
-    Eigen::ArrayXXd single_tumor(long long unsigned int seed);
+    Eigen::ArrayXXd single_tumor(unsigned seed); // overkill
 
     private:
     // tumor parameters: Markov transition matrix, initial condition, and end time 
@@ -93,8 +95,8 @@ double TumorGenerator::lifespan(const Eigen::Ref<const Eigen::ArrayXXd>& weights
     return exp(rnd_generator);
 } 
 
-template <typename Derived>
-int TumorGenerator::increment_type(const Eigen::ArrayBase<Derived> &weights, int &decrement)
+template <typename Derived> //std::array<int,2>, don't need REF
+std::tuple<int,int> TumorGenerator::increment_type(const Eigen::ArrayBase<Derived> &weights)
 {
     // The function gives the type (a integer) that increases its population during 
     // population change.
@@ -105,17 +107,18 @@ int TumorGenerator::increment_type(const Eigen::ArrayBase<Derived> &weights, int
     int c = random_entry / ntype;
     int r = random_entry - c * ntype;
 
+    int decrement = -1;
     if(r != c) decrement = r;
 
-    return c;
+    return {decrement, c};
 }
 
 void TumorGenerator::evolve_step(){
 
-    Eigen::ArrayXXd weights = transition_rates.colwise() * Eigen::Map<Eigen::RowVectorXd>(population.data(), ntype).array().transpose();
-     
-    int decre_type = -1;
-    int incre_type = increment_type(weights, decre_type);
+    Eigen::ArrayXXd weights = transition_rates.colwise() * 
+        Eigen::Map<Eigen::RowVectorXd>(population.data(), ntype).array().transpose();
+
+    auto [decre_type, incre_type] = increment_type(weights); //edit 8/14
 
     population(incre_type) += 1;
     if (decre_type != -1) population(decre_type) -= 1;
@@ -125,7 +128,7 @@ void TumorGenerator::evolve_step(){
 
 
 // Get a single realization of a tumor 
-Eigen::ArrayXXd TumorGenerator::single_tumor(long long unsigned int seed){
+Eigen::ArrayXXd TumorGenerator::single_tumor(unsigned seed){
     
     // set the seed of the random number generator
     rnd_generator.seed(seed);
@@ -156,7 +159,7 @@ Eigen::ArrayXXd TumorGenerator::single_tumor(long long unsigned int seed){
 
 // regular function
 // a single task that constructs a tumor and obtain a single realization
-Eigen::ArrayXXd tumor_par(long long unsigned int seed){
+Eigen::ArrayXXd tumor_par(unsigned seed){
 
     using Eigen::ArrayXXd, Eigen::ArrayXd;
 
@@ -191,26 +194,27 @@ int main()
     int runs = 100;
 
     // assign seeds to realizations
-    std::vector<long long unsigned int> seeds(runs);
+    std::vector<unsigned> seeds(runs);
     std::iota(seeds.begin(), seeds.end(), 0);
 
     // store future objects
     std::vector<std::future<Eigen::ArrayXXd>> sample_tumor_par;
     for (auto k : seeds) sample_tumor_par.emplace_back(std::async(tumor_par, k));
 
-    // store results (a vector of future Eigen arrays)
-    std::vector<Eigen::ArrayXXd> population_result(sample_tumor_par.size());
+    // store results (a vector of future Eigen arrays) //edit this part done 8/13
+    std::vector<Eigen::ArrayXXd> population_result;
+    population_result.reserve(sample_tumor_par.size());
     
-    std::ranges::transform(sample_tumor_par, population_result.begin(), [](std::future<Eigen::ArrayXXd> &fut){
+    std::ranges::transform(sample_tumor_par, std::back_inserter(population_result), [](std::future<Eigen::ArrayXXd> &fut){
         return fut.get();
     });
     
     // store waiting time results
     std::vector<Eigen::ArrayXXd> waitingtime_result;
+    waitingtime_result.reserve(population_result.size());
 
     for (auto array : population_result){
-        Eigen::ArrayXXd tmp = (array > 0).cast<double>();
-        waitingtime_result.push_back(tmp);
+        waitingtime_result.push_back((array > 0).cast<double>());
     }
 
 
@@ -233,5 +237,3 @@ int main()
 
     return 0;
 }
-
-// function definitions

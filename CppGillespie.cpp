@@ -110,6 +110,7 @@ int main(int argc, char** argv)
     cout << "number of types = " << ntype << endl; // print some important parameters
     cout << "transition rate matrix = \n" << transition_rates << endl;
 
+
     // Simulation Parameters
     const double tgrid =  0.1;    // time grid length. On grid points populations are recorded
     const int datalen = (int)(tmax / tgrid) + 1;  // length of recorded data

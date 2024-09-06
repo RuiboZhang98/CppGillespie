@@ -1,0 +1,5 @@
+CML_Example
+ntype 3
+tmax 85.0
+tgrid 1
+runs 1000

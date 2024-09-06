@@ -48,7 +48,7 @@ i. CML_Example_avgpopulation_runs1000tmax85
 
 This file collects the average cellular population in the entire simulation time interval with a resolution $ \Delta t = tgrid$. It contains a 
 
-$$\left(\text{runs} \times \left(\frac{\text{tmax}}{\Delta t} + 1\right)\right) \text{ by } \text{ number of types } + 1$$
+$$\left(\frac{\text{tmax}}{\Delta t} + 1\right) \text{ by } \text{ number of types } + 1$$
 
 matrix. The first column records times.
 
@@ -60,7 +60,7 @@ iii. CML_Example_waitingtime_runs1000tmax85
 
 This files presents the waiting time distribution of all the types include the first type. The first column records times. It contains a
 
-$$\text{runs} \text{ by } (\text{number of types } + 1)$$
+$$\left(\frac{\text{tmax}}{\Delta t} + 1\right) \text{ by } (\text{number of types } + 1)$$
 
 matrix.
    

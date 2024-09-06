@@ -4,7 +4,7 @@ The main goal of this project is to simulate a multitype branching process. For 
 # Compile
 To compile the cpp file, one first installs the [Eigen library](https://eigen.tuxfamily.org/index.php?title=Main_Page). Here the recommand compiler is the MSVC. Using this compiler, one can compile the code by the follwing command line (on a windows machine):
 
-cl -I /path/to/eigen/ /std:c++20 /Febranching.exe BranchingProcessPar.cpp .\TumorGenerator.cpp .\FileToMatrix.cpp
+    cl -I /path/to/eigen/ /std:c++20 /Febranching.exe BranchingProcessPar.cpp .\TumorGenerator.cpp .\FileToMatrix.cpp
 
 Here, 'branching' is the name of the executable file. 
 

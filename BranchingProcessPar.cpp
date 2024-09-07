@@ -5,6 +5,7 @@
 #include <numeric> // for std::iota. std::reduce
 #include <ranges> // for std::ranges
 #include <execution> // for std::execution::par
+#include <functional>
 
 #include "TumorGenerator.h"
 #include "FileToMatrix.h"
@@ -109,13 +110,6 @@ int main()
         return fut.get();
     });
 
-    // store waiting time results
-    std::vector<Eigen::ArrayXXd> waitingtime_result;
-    waitingtime_result.reserve(population_result.size());
-
-    std::ranges::transform(population_result, std::back_inserter(waitingtime_result),
-        [](const Eigen::ArrayXXd& array)->Eigen::ArrayXXd {return (array > 0).cast<double>();});
-
     // compute average population
     Eigen::ArrayXXd initial_array = Eigen::ArrayXXd::Zero(population_result[0].rows(), population_result[0].cols());
     
@@ -123,8 +117,12 @@ int main()
         std::reduce(std::execution::par, population_result.begin(), population_result.end(), initial_array);
     
     // computing waiting time distribution
+    std::plus<Eigen::ArrayXXd> array_add;
     Eigen::ArrayXXd waitingtime_dist = 1.0 / runs * 
-        std::reduce(std::execution::par, waitingtime_result.begin(), waitingtime_result.end(), initial_array);
+        std::transform_reduce(std::execution::par,population_result.begin(), population_result.end(), 
+        initial_array, 
+        array_add,
+        [](Eigen::ArrayXXd& array)->Eigen::ArrayXXd {return (array > 0).cast<double>();});
 
     waitingtime_dist.block(0, 0, waitingtime_dist.rows(), 1) = average_population.block(0, 0, average_population.rows(), 1);
 

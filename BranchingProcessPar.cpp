@@ -117,11 +117,10 @@ int main()
         std::reduce(std::execution::par, population_result.begin(), population_result.end(), initial_array);
     
     // computing waiting time distribution
-    std::plus<Eigen::ArrayXXd> array_add;
     Eigen::ArrayXXd waitingtime_dist = 1.0 / runs * 
         std::transform_reduce(std::execution::par,population_result.begin(), population_result.end(), 
         initial_array, 
-        array_add,
+        std::plus<Eigen::ArrayXXd>(),
         [](Eigen::ArrayXXd& array)->Eigen::ArrayXXd {return (array > 0).cast<double>();});
 
     waitingtime_dist.block(0, 0, waitingtime_dist.rows(), 1) = average_population.block(0, 0, average_population.rows(), 1);
